@@ -111,8 +111,8 @@ class PacketsViewModel: BaseListViewModel<BagelPacket>  {
         let packets = items
         do {
             try packets.forEach({ (packet) in
-                let rawFileName = packet.requestInfo?.url ?? ""
-                let responseFileName = createFileName(rawFileName)
+                let rawFileName = makeUrlMatch(packet.requestInfo?.url ?? "")
+                let responseFileName = makeFileName(rawFileName)
                 
                 // Adding to the mapping plist
                 plistDict[rawFileName] = responseFileName
@@ -142,7 +142,7 @@ class PacketsViewModel: BaseListViewModel<BagelPacket>  {
                                                   atomically: true)
     }
     
-    private func createFileName(_ url: String) -> String {
+    private func makeFileName(_ url: String) -> String {
         return url
             .replacingOccurrences(of: "%", with: "_")
             .replacingOccurrences(of: "&", with: "_")
@@ -150,5 +150,10 @@ class PacketsViewModel: BaseListViewModel<BagelPacket>  {
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: ".", with: "_")
             .replacingOccurrences(of: ":", with: "_") + ".json"
+    }
+    
+    private func makeUrlMatch(_ url: String) -> String {
+        return url
+            .replacingOccurrences(of: "?", with: "[?]") + "$"
     }
 }
