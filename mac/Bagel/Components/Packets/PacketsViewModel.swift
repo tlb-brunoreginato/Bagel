@@ -153,7 +153,6 @@ class PacketsViewModel: BaseListViewModel<BagelPacket>  {
     }
     
     private func makeUrlMatch(_ url: String) -> String {
-        return url
-            .replacingOccurrences(of: "?", with: "[?]") + "$"
+        return "^" + url.replacingOccurrences(of: "?", with: "[?]") + "$"
     }
 }
