@@ -143,11 +143,12 @@ class PacketsViewModel: BaseListViewModel<BagelPacket>  {
     }
     
     private func createFileName(_ url: String) -> String {
-        var urlComponents = URLComponents(string: url)
-        urlComponents?.query = nil
-        let file = urlComponents?.string ?? ""
-        return file
+        return url
+            .replacingOccurrences(of: "%", with: "_")
+            .replacingOccurrences(of: "&", with: "_")
+            .replacingOccurrences(of: "?", with: "_")
             .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: ".", with: "_")
             .replacingOccurrences(of: ":", with: "_") + ".json"
     }
 }
