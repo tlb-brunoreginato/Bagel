@@ -101,4 +101,53 @@ class PacketsViewModel: BaseListViewModel<BagelPacket>  {
         BagelController.shared.selectedProjectController?.selectedDeviceController?.clear()
         self.refreshItems()
     }
+    
+    func saveLocallyOn(_ url: URL?) {
+        var plistDict: [String: String] = [:]
+        
+        guard let url = url else {
+            return
+        }
+        let packets = items
+        do {
+            try packets.forEach({ (packet) in
+                let rawFileName = packet.requestInfo?.url ?? ""
+                let responseFileName = createFileName(rawFileName)
+                
+                // Adding to the mapping plist
+                plistDict[rawFileName] = responseFileName
+                
+                // Creating the json
+                let fullPath = url.appendingPathComponent(responseFileName).path
+                if let data = packet.requestInfo?.responseData?.base64Data {
+                    let dataRepresentation = DataRepresentationParser.parse(data: data)
+                    
+                    if let json = dataRepresentation as? DataJSONRepresentation {
+                        let stringData = String(data: json.originalData!, encoding: .utf8)
+                        try stringData?.write(toFile: fullPath,
+                                              atomically: true,
+                                              encoding: .utf8)
+                    } else {
+                        print("[not json] \(rawFileName)")
+                    }
+                }
+            })
+        } catch {
+            print("[error] \(error)")
+        }
+        
+        // Creating the .plist
+        let plistFullPath = url.appendingPathComponent("mapping.plist").path
+        NSDictionary(dictionary: plistDict).write(toFile: plistFullPath,
+                                                  atomically: true)
+    }
+    
+    private func createFileName(_ url: String) -> String {
+        var urlComponents = URLComponents(string: url)
+        urlComponents?.query = nil
+        let file = urlComponents?.string ?? ""
+        return file
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: ":", with: "_") + ".json"
+    }
 }

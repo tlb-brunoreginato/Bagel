@@ -40,7 +40,6 @@ class BagelController: NSObject, BagelPublisherDelegate {
     }
     
     func didGetPacket(publisher: BagelPublisher, packet: BagelPacket) {
-        
         if self.addPacket(newPacket: packet) {
             NotificationCenter.default.post(name: BagelNotifications.didGetPacket, object: nil, userInfo: ["packet": packet])
             self.checkInitialSelection()

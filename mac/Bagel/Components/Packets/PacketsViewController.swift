@@ -29,6 +29,7 @@ class PacketsViewController: BaseViewController {
     var viewModel: PacketsViewModel?
     var onPacketSelect : ((BagelPacket?) -> ())?
     
+    @IBOutlet weak var saveButton: NSButton!
     @IBOutlet weak var clearButton: NSButton!
     @IBOutlet weak var tableView: BaseTableView!
     
@@ -106,6 +107,15 @@ class PacketsViewController: BaseViewController {
         self.viewModel?.clearPackets()
     }
     
+    @IBAction func saveLocallyButtonAction(_ sender: Any) {
+        let myFileDialog = NSOpenPanel()
+        myFileDialog.canChooseDirectories = true
+        myFileDialog.canChooseFiles = false
+        myFileDialog.allowsMultipleSelection = false
+        myFileDialog.runModal()
+        
+        self.viewModel?.saveLocallyOn(myFileDialog.url)
+    }
 }
 
 extension PacketsViewController: NSTableViewDelegate, NSTableViewDataSource {
